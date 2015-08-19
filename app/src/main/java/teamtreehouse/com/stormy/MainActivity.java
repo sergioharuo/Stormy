@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.okhttp.Call;
@@ -26,10 +27,16 @@ public class MainActivity extends ActionBarActivity {
 
     private CurrentWeather mCurrentWeather;
 
+    private TextView mTemperatureLabel;
+
+    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mTemperatureLabel = (TextView)findViewById(R.id.temperatureLabel);
 
         String apiKey = "27974c4bc33201748eaf542a6769c3b7";
         double latitude = 37.8267;
