@@ -7,7 +7,9 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,7 +41,8 @@ public class MainActivity extends ActionBarActivity {
     @Bind(R.id.precipValue) TextView mPrecipValue;
     @Bind(R.id.summaryLabel) TextView mSummaryLabel;
     @Bind(R.id.iconImageView) ImageView mIconImageView;
-
+    @Bind(R.id.refreshImageView) ImageView mRefreshImageView;
+    @Bind(R.id.progressBar) ProgressBar mProgressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,14 +50,36 @@ public class MainActivity extends ActionBarActivity {
 
         ButterKnife.bind(this);
 
+        mProgressBar.setVisibility(View.INVISIBLE);
 
+        final double latitude = -23.189;
+        final double longitude = -46.906;
+
+        mRefreshImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                getForecast(latitude, longitude);
+
+            }
+        });
+
+
+
+        Log.d(TAG, "Main UI code is running!");
+    }
+
+    private void getForecast(double latitude, double longitude) {
         String apiKey = "27974c4bc33201748eaf542a6769c3b7";
-        double latitude = -23.189;
-        double longitude = -46.906;
+
         String forecastUrl = "https://api.forecast.io/forecast/" + apiKey +
                 "/" + latitude + "," + longitude;
 
         if (isNetworkAvailable()) {
+
+            toggleRefresh();
+
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
                     .url(forecastUrl)
@@ -64,14 +89,26 @@ public class MainActivity extends ActionBarActivity {
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Request request, IOException e) {
-
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            toggleRefresh();
+                        }
+                    });
+                    alertUserAboutError();
                 }
 
                 @Override
                 public void onResponse(Response response) throws IOException {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            toggleRefresh();
+                        }
+                    });
                     try {
                         String jsonData = response.body().string();
-                        Log.v(TAG,jsonData );
+                        Log.v(TAG, jsonData);
                         if (response.isSuccessful()) {
                             mCurrentWeather = getCurrentDetails(jsonData);
                             runOnUiThread(new Runnable() {
@@ -87,10 +124,9 @@ public class MainActivity extends ActionBarActivity {
                     } catch (IOException e) {
                         Log.e(TAG, "Exception caught: ", e);
 
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Exception caught: ", e);
                     }
-                        catch(JSONException e) {
-                            Log.e(TAG, "Exception caught: ", e);
-                        }
                 }
             });
         }
@@ -98,9 +134,21 @@ public class MainActivity extends ActionBarActivity {
             Toast.makeText(this, getString(R.string.network_unavailable_message),
                     Toast.LENGTH_LONG).show();
         }
-
-        Log.d(TAG, "Main UI code is running!");
     }
+
+    private void toggleRefresh() {
+        if(mProgressBar.getVisibility() == View.INVISIBLE) {
+            mProgressBar.setVisibility(View.VISIBLE);
+            mRefreshImageView.setVisibility(View.INVISIBLE);
+        }
+        else {
+
+            mProgressBar.setVisibility(View.INVISIBLE);
+            mRefreshImageView.setVisibility(View.VISIBLE);
+        }
+
+        }
+
 
     private void updateDisplay() {
         mTemperatureLabel.setText(mCurrentWeather.getTemperature() + "");
