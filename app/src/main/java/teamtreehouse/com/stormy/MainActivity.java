@@ -1,6 +1,7 @@
 package teamtreehouse.com.stormy;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -48,8 +49,8 @@ public class MainActivity extends ActionBarActivity {
 
 
         String apiKey = "27974c4bc33201748eaf542a6769c3b7";
-        double latitude = 37.8267;
-        double longitude = -122.423;
+        double latitude = -23.189;
+        double longitude = -46.906;
         String forecastUrl = "https://api.forecast.io/forecast/" + apiKey +
                 "/" + latitude + "," + longitude;
 
@@ -73,6 +74,13 @@ public class MainActivity extends ActionBarActivity {
                         Log.v(TAG,jsonData );
                         if (response.isSuccessful()) {
                             mCurrentWeather = getCurrentDetails(jsonData);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    updateDisplay();
+                                }
+                            });
+
                         } else {
                             alertUserAboutError();
                         }
@@ -92,6 +100,16 @@ public class MainActivity extends ActionBarActivity {
         }
 
         Log.d(TAG, "Main UI code is running!");
+    }
+
+    private void updateDisplay() {
+        mTemperatureLabel.setText(mCurrentWeather.getTemperature() + "");
+        mTimeLabel.setText("At " + mCurrentWeather.getFormattedTime() + " It will be");
+        mHumidityValue.setText((mCurrentWeather.getHumidity() + ""));
+        mPrecipValue.setText(mCurrentWeather.getPrecipChance() + "%");
+        mSummaryLabel.setText(mCurrentWeather.getSummary());
+        Drawable drawable = getResources().getDrawable(mCurrentWeather.getIconId());
+        mIconImageView.setImageDrawable(drawable);
     }
 
     private CurrentWeather getCurrentDetails(String jsonData) throws JSONException {
