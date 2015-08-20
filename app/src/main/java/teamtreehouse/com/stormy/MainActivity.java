@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +21,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 
 public class MainActivity extends ActionBarActivity {
 
@@ -27,16 +31,21 @@ public class MainActivity extends ActionBarActivity {
 
     private CurrentWeather mCurrentWeather;
 
-    private TextView mTemperatureLabel;
 
-    
+    @Bind(R.id.timeLabel) TextView mTimeLabel;
+    @Bind(R.id.temperatureLabel) TextView mTemperatureLabel;
+    @Bind(R.id.humidityValue) TextView mHumidityValue;
+    @Bind(R.id.precipValue) TextView mPrecipValue;
+    @Bind(R.id.summaryLabel) TextView mSummaryLabel;
+    @Bind(R.id.iconImageView) ImageView mIconImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mTemperatureLabel = (TextView)findViewById(R.id.temperatureLabel);
+        ButterKnife.bind(this);
+
 
         String apiKey = "27974c4bc33201748eaf542a6769c3b7";
         double latitude = 37.8267;
