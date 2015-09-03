@@ -175,6 +175,7 @@ public class MainActivity extends ActionBarActivity {
         forecast.setHourlyForecast(getHourlyForecast(jsonData));
         forecast.setDailyForecast(getDailyForecast(jsonData));
 
+
         return  forecast;
 
     }
@@ -200,7 +201,7 @@ public class MainActivity extends ActionBarActivity {
             days[i] = day;
 
         }
-        
+
         return days;
     }
 
